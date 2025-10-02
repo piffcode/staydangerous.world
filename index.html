@@ -1,0 +1,47 @@
+
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/feather-icons"></script>
+    <style>
+        @font-face {
+            font-family: 'Peace';
+            src: url('/fonts/HvdPeace-8qEJ.ttf') format('truetype');
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+background-color: #000;
+            color: #FF0000;
+        }
+        .hero-text {
+            font-family: 'Peace', sans-serif;
+color: #FF0000;
+        }
+.gradient-text {
+            background: linear-gradient(90deg, #FF4D4D 0%, #F9CB28 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .city-card {
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+        }
+        
+        .city-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(255, 77, 77, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <!-- Hero Section -->
+    <section class="relative h-screen flex items-center justify-center overflow-hidden">
+        <div class="absolute inset-0 bg-black opacity-50"></div>
+        <video autoplay muted loop class="absolute w-full h-full object-cover">
+            <source src="/static/media/hero-video.mp4" type="video/mp4">
+        </video>
+<div class="relative z-10 text-center px-6 max-w-4xl mx-auto">
+            <h1 class="hero-text text-6xl md:text-8xl mb-6">

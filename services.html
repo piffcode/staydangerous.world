@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Services | Stay Dangerous Productions</title>
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Saira+Stencil+One&family=Inter:wght@300;400;600;700&display=swap');
+body {
+            font-family: 'Inter', sans-serif;
+            background-color: #000;
+            color: #FF0000;
+        }
+        .hero-text {
+            font-family: 'Saira Stencil One', sans-serif;
+color: #FF0000;
+        }
+        .gradient-text {
+            background: linear-gradient(90deg, #FF4D4D 0%, #F9CB28 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .service-card {
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+        }
+        .service-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(255, 77, 77, 0.3);
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- Hero Section -->
+    <section class="relative h-screen flex items-center justify-center overflow-hidden">
+        <div class="absolute inset-0 bg-black opacity-70"></div>
+        <video autoplay muted loop class="absolute w-full h-full object-cover">
+            <source src="https://static.photos/urban/1200x630/42" type="video/mp4">
+        </video>
+        
+        <div class="relative z-10 text-center px-6 max-w-4xl mx-auto">
+            <h1 class="hero-text text-6xl md:text-8xl mb-6 block text-red-400">OUR SERVICES</h1>
+            <div class="flex justify-center space-x-4">
+                <a href="/contact" class="px-8 py-3 bg-transparent border-2 border-red-500 text-red-400 hover:bg-red-500 hover:text-white transition duration-300 rounded-full font-bold tracking-wider">GET STARTED</a>
+                <a href="/work" class="px-8 py-3 bg-red-600 hover:bg-red-700 text-white transition duration-300 rounded-full font-bold tracking-wider">SEE OUR WORK</a>
+            </div>
+        </div>
+    </section>
+<!-- Services Grid -->
+    <section class="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8" id="services-grid">
+<!-- Service Card 1 -->
+            <div class="service-card p-6 rounded-xl">
+                <h3 class="gradient-text text-2xl font-bold mb-3">Brand Strategy</h3>
+                <p class="text-red-300 mb-2"><strong>Purpose:</strong> Build a brand that stands out and scales.</p>
+                <p class="text-white mb-2"><strong>Includes:</strong> Discovery, audience persona, positioning, messaging, visual identity briefing.</p>
+                <p class="text-red-400"><strong>Pricing:</strong> Starting at $1,000</p>
+                <p class="text-white mt-3 text-sm italic">Outcome: A clear, memorable brand foundation that drives growth.</p>
+            </div>
+
+            <!-- Service Card 2 -->
+            <div class="service-card p-6 rounded-xl">
+                <h3 class="gradient-text text-2xl font-bold mb-3">Life / Mindset Coaching</h3>
+                <p class="text-red-300 mb-2"><strong>Purpose:</strong> Align mindset, clarity, and habits with your goals.</p>
+                <p class="text-white mb-2"><strong>Includes:</strong> Clarity sessions, mindset reset, accountability, resilience training, ritual design.</p>
+                <p class="text-red-400"><strong>Pricing:</strong> Starting at $200</p>
+                <p class="text-white mt-3 text-sm italic">Outcome: A stronger mindset and sustainable daily practices.</p>
+            </div>
+
+            <!-- Service Card 3 -->
+            <div class="service-card p-6 rounded-xl">
+                <h3 class="gradient-text text-2xl font-bold mb-3">Business Coaching</h3>
+                <p class="text-red-300 mb-2"><strong>Purpose:</strong> Turn creativity into a business that works.</p>
+                <p class="text-white mb-2"><strong>Includes:</strong> Career roadmap, brand positioning, monetization plan, content strategy, launch planning.</p>
+                <p class="text-red-400"><strong>Pricing:</strong> Starting at $500</p>
+                <p class="text-white mt-3 text-sm italic">Outcome: A practical plan to grow, monetize, and manage your career.</p>
+            </div>
+
+            <!-- Service Card 4 -->
+            <div class="service-card p-6 rounded-xl">
+                <h3 class="gradient-text text-2xl font-bold mb-3">Creative Direction</h3>
+                <p class="text-red-300 mb-2"><strong>Purpose:</strong> Shape ideas into powerful visuals and stories.</p>
+                <p class="text-white mb-2"><strong>Includes:</strong> Concept design, moodboards, storytelling blueprint, shotlists, on-set direction.</p>
+                <p class="text-red-400"><strong>Pricing:</strong> Starting at $700</p>
+                <p class="text-white mt-3 text-sm italic">Outcome: A cohesive creative vision brought to life.</p>
+            </div>
+
+            <!-- Service Card 5 -->
+            <div class="service-card p-6 rounded-xl">
+                <h3 class="gradient-text text-2xl font-bold mb-3">Production</h3>
+                <p class="text-red-300 mb-2"><strong>Purpose:</strong> Execute high-quality creative projects.</p>
+                <p class="text-white mb-2"><strong>Includes:</strong> Pre-production, casting, location, cinematography, sound, editing, color grading.</p>
+                <p class="text-red-400"><strong>Pricing:</strong> Starting at $1,000</p>
+                <p class="text-white mt-3 text-sm italic">Outcome: Professional visuals that match your vision and scale.</p>
+            </div>
+
+            <!-- Service Card 6 -->
+            <div class="service-card p-6 rounded-xl">
+                <h3 class="gradient-text text-2xl font-bold mb-3">Songwriting</h3>
+                <p class="text-red-300 mb-2"><strong>Purpose:</strong> Create original music that connects deeply.</p>
+                <p class="text-white mb-2"><strong>Includes:</strong> Concepts, lyrics, melody, structure, co-writing, brand songs, feedback.</p>
+                <p class="text-red-400"><strong>Pricing:</strong> Starting at $300</p>
+                <p class="text-white mt-3 text-sm italic">Outcome: Songs tailored to your story, audience, and goals.</p>
+            </div>
+
+            <!-- Service Card 7 -->
+            <div class="service-card p-6 rounded-xl">
+                <h3 class="gradient-text text-2xl font-bold mb-3">Merchandising</h3>
+                <p class="text-red-300 mb-2"><strong>Purpose:</strong> Design and launch merch that builds culture and revenue.</p>
+                <p class="text-white mb-2"><strong>Includes:</strong> Concepts, artwork, sourcing, mockups, production, e-commerce setup, marketing.</p>
+                <p class="text-red-400"><strong>Pricing:</strong> Starting at $500</p>
+                <p class="text-white mt-3 text-sm italic">Outcome: Merch drops that reflect your brand and move product.</p>
+            </div>
+
+            <!-- Service Card 8 -->
+            <div class="service-card p-6 rounded-xl">
+                <h3 class="gradient-text text-2xl font-bold mb-3">Website Building</h3>
+                <p class="text-red-300 mb-2"><strong>Purpose:</strong> Build a simple, branded digital home.</p>
+                <p class="text-white mb-2"><strong>Includes:</strong> Up to 5 pages (Home, About, Services, Portfolio, Contact), hosting setup, mobile optimization.</p>
+                <p class="text-red-400"><strong>Pricing:</strong> Starting at $500</p>
+                <p class="text-white mt-3 text-sm italic">Outcome: A professional site that represents your brand with clarity.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Banner -->
+    <section class="py-16 bg-gradient-to-r from-red-900 to-black">
+        <div class="text-center max-w-4xl mx-auto px-4">
+            <h2 class="hero-text text-4xl md:text-5xl mb-6">Ready to build with us?</h2>
+            <a href="/contact" class="inline-block px-8 py-3 bg-red-600 hover:bg-red-700 text-white transition duration-300 rounded-full text-lg font-bold">Start Your Project</a>
+        </div>
+    </section>
+
+    <script>
+        feather.replace();
+    </script>
+</body>
+</html>
