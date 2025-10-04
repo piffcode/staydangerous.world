@@ -8,17 +8,24 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/feather-icons"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Saira+Stencil+One&family=Inter:wght@300;400;600;700&display=swap');
+@font-face {
+    font-family: 'HVD Peace';
+    src: url('https://cdn.jsdelivr.net/gh/piffcode/staydangerous.world@main/fonts/HvdPeace-8qEJ.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+@import url('https://fonts.googleapis.com/css2?family=Saira+Stencil+One&family=Inter:wght@300;400;600;700&display=swap');
 body {
             font-family: 'Inter', sans-serif;
             background-color: #000;
             color: #FF0000;
         }
         .hero-text {
-            font-family: 'Saira Stencil One', sans-serif;
+            font-family: 'HVD Peace', sans-serif;
 color: #FF0000;
         }
-        .gradient-text {
+.gradient-text {
             background: linear-gradient(90deg, #FF4D4D 0%, #F9CB28 100%);
             -webkit-background-clip: text;
             background-clip: text;
@@ -44,11 +51,11 @@ color: #FF0000;
         </video>
         
         <div class="relative z-10 text-center px-6 max-w-4xl mx-auto">
-            <h1 class="hero-text text-6xl md:text-8xl mb-6 block text-red-400">OUR SERVICES</h1>
-            <div class="flex justify-center space-x-4">
-                <a href="/contact" class="px-8 py-3 bg-transparent border-2 border-red-500 text-red-400 hover:bg-red-500 hover:text-white transition duration-300 rounded-full font-bold tracking-wider">GET STARTED</a>
-                <a href="/work" class="px-8 py-3 bg-red-600 hover:bg-red-700 text-white transition duration-300 rounded-full font-bold tracking-wider">SEE OUR WORK</a>
-            </div>
+            <h1 class="hero-text text-6xl md:text-8xl mb-6 block">OUR SERVICES</h1>
+<div class="flex justify-center space-x-4">
+            <a href="/contact" class="px-8 py-3 bg-transparent border-2 border-red-500 text-red-400 hover:bg-red-500 hover:text-white transition duration-300 rounded-full font-bold tracking-wider">GET STARTED</a>
+            <a href="/work" class="px-8 py-3 bg-red-600 hover:bg-red-700 text-white transition duration-300 rounded-full font-bold tracking-wider">SEE OUR WORK</a>
+</div>
         </div>
     </section>
 <!-- Services Grid -->
