@@ -4,147 +4,862 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Services | Stay Dangerous Productions</title>
-    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/feather-icons"></script>
     <style>
-@font-face {
-    font-family: 'HVD Peace';
-    src: url('https://cdn.jsdelivr.net/gh/piffcode/staydangerous.world@main/fonts/HvdPeace-8qEJ.woff2') format('woff2');
-    font-weight: normal;
-    font-style: normal;
-    font-display: swap;
-}
-@import url('https://fonts.googleapis.com/css2?family=Saira+Stencil+One&family=Inter:wght@300;400;600;700&display=swap');
-body {
+        @import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@300;400;600;700;900&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
             font-family: 'Inter', sans-serif;
             background-color: #000;
             color: #FF0000;
+            overflow-x: hidden;
         }
-        .hero-text {
-            font-family: 'HVD Peace', sans-serif;
-color: #FF0000;
+
+        a {
+            color: inherit;
+            text-decoration: none;
         }
-.gradient-text {
-            background: linear-gradient(90deg, #FF4D4D 0%, #F9CB28 100%);
+
+        #particleCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .video-container {
+            position: fixed;
+            inset: 0;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .video-overlay {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at center, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.85) 100%);
+            z-index: 1;
+            mix-blend-mode: multiply;
+        }
+
+        #bgVideo {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            min-width: 100%;
+            min-height: 100%;
+            transform: translate(-50%, -50%) scale(1.1);
+            filter: brightness(0.65) contrast(1.2);
+            transition: all 0.3s ease;
+        }
+
+        .loading-screen {
+            position: fixed;
+            inset: 0;
+            background: #000;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+            transition: opacity 0.8s ease;
+        }
+
+        .loading-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loader-text {
+            font-family: 'Archivo Black', sans-serif;
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            background: linear-gradient(90deg, #FF0000, #F9CB28);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
+            animation: pulse 1.6s ease-in-out infinite;
         }
-        .service-card {
-            transition: all 0.3s ease;
+
+        .loader-bar {
+            width: 260px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 999px;
+            overflow: hidden;
+        }
+
+        .loader-progress {
+            height: 100%;
+            width: 0;
+            background: linear-gradient(90deg, #FF0000, #F9CB28);
+            animation: loadProgress 2s ease forwards;
+        }
+
+        .logo {
+            position: fixed;
+            top: 2rem;
+            left: 2rem;
+            z-index: 100;
+            font-family: 'Archivo Black', sans-serif;
+            font-size: 1.5rem;
+            letter-spacing: 2px;
+            background: linear-gradient(90deg, #FF0000, #F9CB28);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: fadeIn 0.8s ease-out, logoPulse 3s ease-in-out infinite;
+        }
+
+        .greeting {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            z-index: 100;
+            text-align: right;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+        }
+
+        .greeting .time-display {
+            font-family: 'Archivo Black', sans-serif;
+            font-size: 1.4rem;
+            color: #FF0000;
+            display: block;
+        }
+
+        .control-panel {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 100;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .control-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
         }
+
+        .control-btn:hover {
+            background: rgba(255, 0, 0, 0.2);
+            border-color: #FF0000;
+            transform: scale(1.08) rotate(4deg);
+        }
+
+        .custom-cursor {
+            position: fixed;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 2px solid #FF0000;
+            mix-blend-mode: difference;
+            pointer-events: none;
+            z-index: 9999;
+            transition: all 0.2s cubic-bezier(0.23, 1, 0.32, 1);
+            opacity: 0;
+        }
+
+        .custom-cursor.active {
+            opacity: 1;
+        }
+
+        .custom-cursor.hover {
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 0, 0, 0.15);
+            border-color: #fff;
+        }
+
+        .trail {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 0, 0, 0.6) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 9998;
+            animation: trailFade 0.45s ease-out forwards;
+        }
+
+        .floating-nav {
+            position: fixed;
+            left: 2rem;
+            bottom: 2rem;
+            z-index: 90;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .nav-link {
+            position: relative;
+            padding-left: 3.5rem;
+            display: block;
+            color: #fff;
+            letter-spacing: 2px;
+            overflow: hidden;
+        }
+
+        .nav-number {
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            font-family: 'Inter', sans-serif;
+            font-weight: 900;
+            font-size: 1.2rem;
+            color: rgba(255, 0, 0, 0.35);
+            transition: all 0.4s ease;
+        }
+
+        .glitch-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        .glitch-text {
+            position: relative;
+            font-family: 'Archivo Black', sans-serif;
+            font-size: 1rem;
+            color: #fff;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            animation: glitch-skew 2s infinite linear alternate-reverse;
+        }
+
+        .glitch-text::before,
+        .glitch-text::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+        }
+
+        .nav-link:hover .glitch-text::before,
+        .nav-link.active .glitch-text::before {
+            animation: glitch-anim-1 0.3s infinite linear alternate-reverse;
+            opacity: 0.8;
+            color: #0FF;
+            clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%);
+        }
+
+        .nav-link:hover .glitch-text::after,
+        .nav-link.active .glitch-text::after {
+            animation: glitch-anim-2 0.3s infinite linear alternate-reverse;
+            opacity: 0.8;
+            color: #F0F;
+            clip-path: polygon(0 60%, 100% 60%, 100% 100%, 0 100%);
+        }
+
+        .gradient-line {
+            position: absolute;
+            bottom: -0.4rem;
+            left: 0;
+            height: 2px;
+            width: 0;
+            background: linear-gradient(90deg, #FF0000, #F9CB28, #00FF00, #00FFFF);
+            background-size: 300% 100%;
+            animation: gradientShift 3s linear infinite;
+            transition: width 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .nav-link:hover .gradient-line,
+        .nav-link.active .gradient-line {
+            width: 100%;
+        }
+
+        .nav-link:hover .nav-number,
+        .nav-link.active .nav-number {
+            color: #FF0000;
+            transform: translate(-6px, -50%) rotate(-5deg);
+        }
+
+        .content-wrapper {
+            position: relative;
+            z-index: 10;
+            min-height: 100vh;
+            padding: 7rem 1.5rem 6rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .services-container {
+            width: 100%;
+            max-width: 1200px;
+            display: grid;
+            gap: 2.5rem;
+        }
+
+        .services-header {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+        }
+
+        .services-header h1 {
+            font-family: 'Archivo Black', sans-serif;
+            font-size: clamp(2.8rem, 5vw, 4.2rem);
+            color: #FF0000;
+        }
+
+        .services-header p {
+            color: rgba(255, 255, 255, 0.7);
+            max-width: 720px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+
+        .cta-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .cta-button {
+            padding: 0.75rem 1.75rem;
+            border-radius: 999px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            border: 1px solid rgba(255, 0, 0, 0.4);
+            color: rgba(255, 255, 255, 0.9);
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .cta-button.primary {
+            background: linear-gradient(135deg, #FF0000, #F9CB28);
+            color: #000;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(255, 0, 0, 0.35);
+        }
+
+        .services-grid {
+            display: grid;
+            gap: 1.8rem;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        }
+
+        .service-card {
+            background: rgba(0, 0, 0, 0.65);
+            border-radius: 22px;
+            border: 1px solid rgba(255, 0, 0, 0.25);
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(18px);
+            transition: transform 0.35s ease, box-shadow 0.35s ease;
+        }
+
+        .service-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at top left, rgba(255, 0, 0, 0.25), transparent 60%);
+            opacity: 0;
+            transition: opacity 0.35s ease;
+        }
+
         .service-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(255, 77, 77, 0.3);
+            transform: translateY(-6px) scale(1.01);
+            box-shadow: 0 20px 55px rgba(255, 0, 0, 0.25);
+        }
+
+        .service-card:hover::before {
+            opacity: 1;
+        }
+
+        .service-card h3 {
+            font-family: 'Archivo Black', sans-serif;
+            font-size: 1.5rem;
+            color: #FF0000;
+            margin-bottom: 0.8rem;
+        }
+
+        .service-card p {
+            color: rgba(255, 255, 255, 0.75);
+            line-height: 1.6;
+        }
+
+        .service-card strong {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .service-card .price {
+            margin-top: 1rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .cta-banner {
+            margin-top: 1rem;
+            padding: 2.5rem;
+            border-radius: 24px;
+            background: linear-gradient(135deg, rgba(255,0,0,0.35), rgba(0,0,0,0.75));
+            border: 1px solid rgba(255, 0, 0, 0.3);
+            text-align: center;
+            color: #fff;
+            display: grid;
+            gap: 1rem;
+        }
+
+        .cta-banner h2 {
+            font-family: 'Archivo Black', sans-serif;
+            font-size: clamp(2rem, 4vw, 2.8rem);
+        }
+
+        .cta-banner p {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        @keyframes glitch-skew {
+            0% { transform: skew(2deg); }
+            50% { transform: skew(-2deg); }
+            100% { transform: skew(2deg); }
+        }
+
+        @keyframes glitch-anim-1 {
+            0% { transform: translate(0); }
+            20% { transform: translate(-3px, 3px); }
+            40% { transform: translate(-3px, -3px); }
+            60% { transform: translate(3px, 3px); }
+            80% { transform: translate(3px, -3px); }
+            100% { transform: translate(0); }
+        }
+
+        @keyframes glitch-anim-2 {
+            0% { transform: translate(0); }
+            20% { transform: translate(3px, -3px); }
+            40% { transform: translate(3px, 3px); }
+            60% { transform: translate(-3px, -3px); }
+            80% { transform: translate(-3px, 3px); }
+            100% { transform: translate(0); }
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 300% 50%; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes logoPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        @keyframes loadProgress {
+            to { width: 100%; }
+        }
+
+        @keyframes trailFade {
+            to {
+                transform: scale(2);
+                opacity: 0;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .floating-nav {
+                position: static;
+                flex-direction: row;
+                justify-content: center;
+                margin-top: 2rem;
+            }
+
+            .nav-link {
+                padding-left: 0;
+                text-align: center;
+            }
+
+            .nav-number {
+                display: none;
+            }
+
+            .gradient-line {
+                left: 50%;
+                transform: translateX(-50%);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .logo {
+                left: 1.5rem;
+            }
+
+            .greeting {
+                right: 1.5rem;
+            }
+
+            .content-wrapper {
+                padding-top: 8rem;
+            }
         }
     </style>
 </head>
-<body class="min-h-screen">
-    <!-- Hero Section -->
-    <section class="relative h-screen flex items-center justify-center overflow-hidden">
-        <div class="absolute inset-0 bg-black opacity-70"></div>
-        <video autoplay muted loop class="absolute w-full h-full object-cover">
+<body>
+    <div id="loadingScreen" class="loading-screen">
+        <div class="loader-text">Stay Dangerous Productions</div>
+        <div class="loader-bar"><div class="loader-progress"></div></div>
+    </div>
+
+    <canvas id="particleCanvas"></canvas>
+
+    <div class="video-container">
+        <div class="video-overlay"></div>
+        <video id="bgVideo" autoplay muted loop playsinline>
             <source src="https://static.photos/urban/1200x630/42" type="video/mp4">
         </video>
-        
-        <div class="relative z-10 text-center px-6 max-w-4xl mx-auto">
-            <h1 class="hero-text text-6xl md:text-8xl mb-6 block">OUR SERVICES</h1>
-<div class="flex justify-center space-x-4">
-            <a href="/contact" class="px-8 py-3 bg-transparent border-2 border-red-500 text-red-400 hover:bg-red-500 hover:text-white transition duration-300 rounded-full font-bold tracking-wider">GET STARTED</a>
-            <a href="/work" class="px-8 py-3 bg-red-600 hover:bg-red-700 text-white transition duration-300 rounded-full font-bold tracking-wider">SEE OUR WORK</a>
-</div>
+    </div>
+
+    <a href="/" class="logo">STAY DANGEROUS</a>
+
+    <div class="greeting">
+        <span id="greetingText">Good evening</span>
+        <span id="currentTime" class="time-display">00:00</span>
+    </div>
+
+    <main class="content-wrapper">
+        <div class="services-container">
+            <header class="services-header">
+                <h1 class="glitch-wrapper"><span class="glitch-text" data-text="Services">Services</span></h1>
+                <p>Strategies, coaching, and execution built for artists and brands who refuse to play it safe. Mix and match what you need and we’ll engineer an end-to-end plan that delivers.</p>
+                <div class="cta-buttons">
+                    <a href="/contact" class="cta-button primary">Start a Project</a>
+                    <a href="/work" class="cta-button">See Recent Work</a>
+                </div>
+            </header>
+
+            <section class="services-grid">
+                <article class="service-card">
+                    <h3>Brand Strategy</h3>
+                    <p><strong>Purpose:</strong> Build a brand that stands out and scales.</p>
+                    <p><strong>Includes:</strong> Discovery, audience persona, positioning, messaging, visual identity briefing.</p>
+                    <p class="price">Starting at $1,000</p>
+                    <p><em>Outcome: A clear, memorable brand foundation that drives growth.</em></p>
+                </article>
+
+                <article class="service-card">
+                    <h3>Life / Mindset Coaching</h3>
+                    <p><strong>Purpose:</strong> Align mindset, clarity, and habits with your goals.</p>
+                    <p><strong>Includes:</strong> Clarity sessions, mindset reset, accountability, resilience training, ritual design.</p>
+                    <p class="price">Starting at $200</p>
+                    <p><em>Outcome: A stronger mindset and sustainable daily practices.</em></p>
+                </article>
+
+                <article class="service-card">
+                    <h3>Business Coaching</h3>
+                    <p><strong>Purpose:</strong> Turn creativity into a business that works.</p>
+                    <p><strong>Includes:</strong> Career roadmap, brand positioning, monetization plan, content strategy, launch planning.</p>
+                    <p class="price">Starting at $500</p>
+                    <p><em>Outcome: A practical plan to grow, monetize, and manage your career.</em></p>
+                </article>
+
+                <article class="service-card">
+                    <h3>Creative Direction</h3>
+                    <p><strong>Purpose:</strong> Shape ideas into powerful visuals and stories.</p>
+                    <p><strong>Includes:</strong> Concept design, moodboards, storytelling blueprint, shotlists, on-set direction.</p>
+                    <p class="price">Starting at $700</p>
+                    <p><em>Outcome: A cohesive creative vision brought to life.</em></p>
+                </article>
+
+                <article class="service-card">
+                    <h3>Production</h3>
+                    <p><strong>Purpose:</strong> Execute high-quality creative projects.</p>
+                    <p><strong>Includes:</strong> Pre-production, casting, location, cinematography, sound, editing, color grading.</p>
+                    <p class="price">Starting at $1,000</p>
+                    <p><em>Outcome: Professional visuals that match your vision and scale.</em></p>
+                </article>
+
+                <article class="service-card">
+                    <h3>Songwriting</h3>
+                    <p><strong>Purpose:</strong> Create original music that connects deeply.</p>
+                    <p><strong>Includes:</strong> Concepts, lyrics, melody, structure, co-writing, brand songs, feedback.</p>
+                    <p class="price">Starting at $300</p>
+                    <p><em>Outcome: Songs tailored to your story, audience, and goals.</em></p>
+                </article>
+
+                <article class="service-card">
+                    <h3>Merchandising</h3>
+                    <p><strong>Purpose:</strong> Design and launch merch that builds culture and revenue.</p>
+                    <p><strong>Includes:</strong> Concepts, artwork, sourcing, mockups, production, e-commerce setup, marketing.</p>
+                    <p class="price">Starting at $500</p>
+                    <p><em>Outcome: Merch drops that reflect your brand and move product.</em></p>
+                </article>
+
+                <article class="service-card">
+                    <h3>Website Building</h3>
+                    <p><strong>Purpose:</strong> Build a simple, branded digital home.</p>
+                    <p><strong>Includes:</strong> Up to 5 pages (Home, About, Services, Portfolio, Contact), hosting setup, mobile optimization.</p>
+                    <p class="price">Starting at $500</p>
+                    <p><em>Outcome: A professional site that represents your brand with clarity.</em></p>
+                </article>
+            </section>
+
+            <section class="cta-banner">
+                <h2>Ready to build with us?</h2>
+                <p>Tap into full-stack creative production, strategy, and development. We plug in where you need us most.</p>
+                <div class="cta-buttons">
+                    <a href="/contact" class="cta-button primary">Start Your Project</a>
+                </div>
+            </section>
         </div>
-    </section>
-<!-- Services Grid -->
-    <section class="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8" id="services-grid">
-<!-- Service Card 1 -->
-            <div class="service-card p-6 rounded-xl">
-                <h3 class="gradient-text text-2xl font-bold mb-3">Brand Strategy</h3>
-                <p class="text-red-300 mb-2"><strong>Purpose:</strong> Build a brand that stands out and scales.</p>
-                <p class="text-white mb-2"><strong>Includes:</strong> Discovery, audience persona, positioning, messaging, visual identity briefing.</p>
-                <p class="text-red-400"><strong>Pricing:</strong> Starting at $1,000</p>
-                <p class="text-white mt-3 text-sm italic">Outcome: A clear, memorable brand foundation that drives growth.</p>
-            </div>
+    </main>
 
-            <!-- Service Card 2 -->
-            <div class="service-card p-6 rounded-xl">
-                <h3 class="gradient-text text-2xl font-bold mb-3">Life / Mindset Coaching</h3>
-                <p class="text-red-300 mb-2"><strong>Purpose:</strong> Align mindset, clarity, and habits with your goals.</p>
-                <p class="text-white mb-2"><strong>Includes:</strong> Clarity sessions, mindset reset, accountability, resilience training, ritual design.</p>
-                <p class="text-red-400"><strong>Pricing:</strong> Starting at $200</p>
-                <p class="text-white mt-3 text-sm italic">Outcome: A stronger mindset and sustainable daily practices.</p>
-            </div>
+    <nav class="floating-nav">
+        <a href="/" class="nav-link">
+            <div class="nav-number">01</div>
+            <div class="glitch-wrapper"><span class="glitch-text" data-text="Home">Home</span></div>
+            <div class="gradient-line"></div>
+        </a>
+        <a href="/work" class="nav-link">
+            <div class="nav-number">02</div>
+            <div class="glitch-wrapper"><span class="glitch-text" data-text="Work">Work</span></div>
+            <div class="gradient-line"></div>
+        </a>
+        <a href="/services" class="nav-link active">
+            <div class="nav-number">03</div>
+            <div class="glitch-wrapper"><span class="glitch-text" data-text="Services">Services</span></div>
+            <div class="gradient-line"></div>
+        </a>
+        <a href="/contact" class="nav-link">
+            <div class="nav-number">04</div>
+            <div class="glitch-wrapper"><span class="glitch-text" data-text="Contact">Contact</span></div>
+            <div class="gradient-line"></div>
+        </a>
+    </nav>
 
-            <!-- Service Card 3 -->
-            <div class="service-card p-6 rounded-xl">
-                <h3 class="gradient-text text-2xl font-bold mb-3">Business Coaching</h3>
-                <p class="text-red-300 mb-2"><strong>Purpose:</strong> Turn creativity into a business that works.</p>
-                <p class="text-white mb-2"><strong>Includes:</strong> Career roadmap, brand positioning, monetization plan, content strategy, launch planning.</p>
-                <p class="text-red-400"><strong>Pricing:</strong> Starting at $500</p>
-                <p class="text-white mt-3 text-sm italic">Outcome: A practical plan to grow, monetize, and manage your career.</p>
-            </div>
+    <div class="control-panel">
+        <button id="soundToggle" class="control-btn" aria-label="Toggle sound"><i data-feather="volume-x"></i></button>
+        <button id="particleToggle" class="control-btn" aria-label="Toggle particles"><i data-feather="zap"></i></button>
+    </div>
 
-            <!-- Service Card 4 -->
-            <div class="service-card p-6 rounded-xl">
-                <h3 class="gradient-text text-2xl font-bold mb-3">Creative Direction</h3>
-                <p class="text-red-300 mb-2"><strong>Purpose:</strong> Shape ideas into powerful visuals and stories.</p>
-                <p class="text-white mb-2"><strong>Includes:</strong> Concept design, moodboards, storytelling blueprint, shotlists, on-set direction.</p>
-                <p class="text-red-400"><strong>Pricing:</strong> Starting at $700</p>
-                <p class="text-white mt-3 text-sm italic">Outcome: A cohesive creative vision brought to life.</p>
-            </div>
-
-            <!-- Service Card 5 -->
-            <div class="service-card p-6 rounded-xl">
-                <h3 class="gradient-text text-2xl font-bold mb-3">Production</h3>
-                <p class="text-red-300 mb-2"><strong>Purpose:</strong> Execute high-quality creative projects.</p>
-                <p class="text-white mb-2"><strong>Includes:</strong> Pre-production, casting, location, cinematography, sound, editing, color grading.</p>
-                <p class="text-red-400"><strong>Pricing:</strong> Starting at $1,000</p>
-                <p class="text-white mt-3 text-sm italic">Outcome: Professional visuals that match your vision and scale.</p>
-            </div>
-
-            <!-- Service Card 6 -->
-            <div class="service-card p-6 rounded-xl">
-                <h3 class="gradient-text text-2xl font-bold mb-3">Songwriting</h3>
-                <p class="text-red-300 mb-2"><strong>Purpose:</strong> Create original music that connects deeply.</p>
-                <p class="text-white mb-2"><strong>Includes:</strong> Concepts, lyrics, melody, structure, co-writing, brand songs, feedback.</p>
-                <p class="text-red-400"><strong>Pricing:</strong> Starting at $300</p>
-                <p class="text-white mt-3 text-sm italic">Outcome: Songs tailored to your story, audience, and goals.</p>
-            </div>
-
-            <!-- Service Card 7 -->
-            <div class="service-card p-6 rounded-xl">
-                <h3 class="gradient-text text-2xl font-bold mb-3">Merchandising</h3>
-                <p class="text-red-300 mb-2"><strong>Purpose:</strong> Design and launch merch that builds culture and revenue.</p>
-                <p class="text-white mb-2"><strong>Includes:</strong> Concepts, artwork, sourcing, mockups, production, e-commerce setup, marketing.</p>
-                <p class="text-red-400"><strong>Pricing:</strong> Starting at $500</p>
-                <p class="text-white mt-3 text-sm italic">Outcome: Merch drops that reflect your brand and move product.</p>
-            </div>
-
-            <!-- Service Card 8 -->
-            <div class="service-card p-6 rounded-xl">
-                <h3 class="gradient-text text-2xl font-bold mb-3">Website Building</h3>
-                <p class="text-red-300 mb-2"><strong>Purpose:</strong> Build a simple, branded digital home.</p>
-                <p class="text-white mb-2"><strong>Includes:</strong> Up to 5 pages (Home, About, Services, Portfolio, Contact), hosting setup, mobile optimization.</p>
-                <p class="text-red-400"><strong>Pricing:</strong> Starting at $500</p>
-                <p class="text-white mt-3 text-sm italic">Outcome: A professional site that represents your brand with clarity.</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- CTA Banner -->
-    <section class="py-16 bg-gradient-to-r from-red-900 to-black">
-        <div class="text-center max-w-4xl mx-auto px-4">
-            <h2 class="hero-text text-4xl md:text-5xl mb-6">Ready to build with us?</h2>
-            <a href="/contact" class="inline-block px-8 py-3 bg-red-600 hover:bg-red-700 text-white transition duration-300 rounded-full text-lg font-bold">Start Your Project</a>
-        </div>
-    </section>
+    <div id="customCursor" class="custom-cursor"></div>
 
     <script>
         feather.replace();
+
+        const canvas = document.getElementById('particleCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        let particlesEnabled = true;
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        if (canvas) {
+            resizeCanvas();
+            class Particle {
+                constructor() {
+                    this.reset();
+                }
+
+                reset() {
+                    this.x = Math.random() * canvas.width;
+                    this.y = Math.random() * canvas.height;
+                    this.vx = (Math.random() - 0.5) * 0.5;
+                    this.vy = (Math.random() - 0.5) * 0.5;
+                    this.size = Math.random() * 2;
+                    this.alpha = Math.random() * 0.5;
+                }
+
+                update() {
+                    this.x += this.vx;
+                    this.y += this.vy;
+                    if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) {
+                        this.reset();
+                    }
+                }
+
+                draw() {
+                    ctx.fillStyle = `rgba(255, 0, 0, ${this.alpha})`;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+
+            function initParticles() {
+                particles = [];
+                for (let i = 0; i < 100; i++) {
+                    particles.push(new Particle());
+                }
+            }
+
+            function animateParticles() {
+                if (!particlesEnabled) return;
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                particles.forEach(p => {
+                    p.update();
+                    p.draw();
+                });
+                requestAnimationFrame(animateParticles);
+            }
+
+            initParticles();
+            animateParticles();
+
+            window.addEventListener('resize', () => {
+                resizeCanvas();
+                initParticles();
+            });
+
+            const particleToggle = document.getElementById('particleToggle');
+            if (particleToggle) {
+                particleToggle.addEventListener('click', () => {
+                    particlesEnabled = !particlesEnabled;
+                    const icon = particleToggle.querySelector('i');
+                    if (icon) {
+                        icon.setAttribute('data-feather', particlesEnabled ? 'zap' : 'zap-off');
+                        feather.replace();
+                    }
+                    if (particlesEnabled) {
+                        animateParticles();
+                    } else {
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    }
+                });
+            }
+        }
+
+        const loadingScreen = document.getElementById('loadingScreen');
+        setTimeout(() => loadingScreen.classList.add('hidden'), 2200);
+
+        const bgVideo = document.getElementById('bgVideo');
+        const soundToggle = document.getElementById('soundToggle');
+        let isMuted = true;
+
+        if (soundToggle && bgVideo) {
+            soundToggle.addEventListener('click', () => {
+                isMuted = !isMuted;
+                bgVideo.muted = isMuted;
+                const icon = soundToggle.querySelector('i');
+                if (icon) {
+                    icon.setAttribute('data-feather', isMuted ? 'volume-x' : 'volume-2');
+                    feather.replace();
+                }
+            });
+        }
+
+        document.addEventListener('mousemove', (e) => {
+            if (!bgVideo) return;
+            const moveX = (e.clientX / window.innerWidth - 0.5) * 20;
+            const moveY = (e.clientY / window.innerHeight - 0.5) * 20;
+            bgVideo.style.transform = `translate(calc(-50% + ${moveX}px), calc(-50% + ${moveY}px)) scale(1.1)`;
+        });
+
+        function updateTime() {
+            const now = new Date();
+            const hours = now.getHours();
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const greetingText = document.getElementById('greetingText');
+            const timeDisplay = document.getElementById('currentTime');
+            if (timeDisplay) timeDisplay.textContent = `${hours}:${minutes}`;
+            if (greetingText) {
+                let greeting = 'Good evening';
+                if (hours < 12) greeting = 'Good morning';
+                else if (hours < 18) greeting = 'Good afternoon';
+                greetingText.textContent = greeting;
+            }
+        }
+
+        updateTime();
+        setInterval(updateTime, 60000);
+
+        const cursor = document.getElementById('customCursor');
+        if (cursor) {
+            let mouseX = 0, mouseY = 0;
+            let cursorX = 0, cursorY = 0;
+
+            document.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+                cursor.classList.add('active');
+            });
+
+            function updateCursor() {
+                cursorX += (mouseX - cursorX) * 0.15;
+                cursorY += (mouseY - cursorY) * 0.15;
+                cursor.style.left = `${cursorX}px`;
+                cursor.style.top = `${cursorY}px`;
+                requestAnimationFrame(updateCursor);
+            }
+
+            updateCursor();
+
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+                link.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+                link.addEventListener('mousemove', function (e) {
+                    const rect = this.getBoundingClientRect();
+                    const x = e.clientX - rect.left - rect.width / 2;
+                    const y = e.clientY - rect.top - rect.height / 2;
+                    this.style.transform = `translate(${x * 0.08}px, ${y * 0.08}px)`;
+                });
+                link.addEventListener('mouseleave', function () {
+                    this.style.transform = 'translate(0, 0)';
+                });
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                const trail = document.createElement('div');
+                trail.className = 'trail';
+                trail.style.left = `${e.clientX}px`;
+                trail.style.top = `${e.clientY}px`;
+                document.body.appendChild(trail);
+                setTimeout(() => trail.remove(), 450);
+            });
+
+            document.addEventListener('keydown', (e) => {
+                const number = parseInt(e.key, 10);
+                const navLinks = document.querySelectorAll('.nav-link');
+                if (!Number.isNaN(number) && number > 0 && number <= navLinks.length) {
+                    navLinks[number - 1].click();
+                }
+            });
+        }
     </script>
 </body>
 </html>
